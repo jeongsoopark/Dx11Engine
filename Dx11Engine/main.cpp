@@ -4,7 +4,7 @@
 
 void main()
 {
-	FrameWork* framework = new FrameWork();
+	FrameWork* framework = new FrameWork("DX Engine Ex1");
 
 	if (framework->Init())
 	{

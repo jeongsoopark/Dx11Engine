@@ -10,6 +10,11 @@ FrameWork::FrameWork()
 {
 }
 
+FrameWork::FrameWork(char* applicationName)
+{
+	mApplicationName = applicationName;
+}
+
 
 FrameWork::~FrameWork()
 {

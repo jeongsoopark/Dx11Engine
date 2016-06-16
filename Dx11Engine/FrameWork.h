@@ -9,6 +9,7 @@ class FrameWork
 {
 public:
 	FrameWork();
+	FrameWork(char* applicationName);
 	~FrameWork();
 	bool Init();
 	void Run();
