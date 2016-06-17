@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __FRAMEWORK_H__
-#define __FRAMEWORK_H__
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -23,5 +21,3 @@ private:
 
 };
 
-
-#endif

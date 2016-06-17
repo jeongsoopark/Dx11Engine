@@ -86,6 +86,8 @@ bool FrameWork::createDxWindow(char* windowName, int x, int y, int width, int he
 	int nStyle = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	int screenX = 0;
+	int screenY = 0;
 
 	if (bFULL_SCREEN)
 {	
@@ -101,10 +103,12 @@ bool FrameWork::createDxWindow(char* windowName, int x, int y, int width, int he
 	}
 	else
 	{
+		screenX = x;
+		screenY = y;
 		screenWidth = width;
 		screenHeight = height;
 	}
-	hwnd = CreateWindowEx(WS_EX_APPWINDOW, windowName, windowName, nStyle, x, y, width, height, NULL, NULL, mHIntance, NULL);
+	hwnd = CreateWindowEx(WS_EX_APPWINDOW, windowName, windowName, nStyle, x, y, screenWidth, screenHeight, NULL, NULL, mHIntance, NULL);
 	if (hwnd == NULL)
 	{
 		MessageBox(NULL, "CreateWindowEX() failed", "Error", MB_OK);
@@ -125,6 +129,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
+		EndPaint(hwnd, &ps);
 		break;
 	case WM_CLOSE:
 		PostQuitMessage(0);
