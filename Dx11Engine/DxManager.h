@@ -29,13 +29,20 @@ private:
     bool initViewport(int width, int height);
     bool initAlphaBlending();
 
-    bool mVsync;
-    int mGPUMemory;
-    char* mGPUDescription[256];
     IDXGISwapChain* mSwapChain;
     ID3D11Device* mDevice;
     ID3D11DeviceContext* mDeviceContext;
-    :wa
+	ID3D11RenderTargetView* mRenderTargetView;
+	ID3D11Texture2D* mDepthStencilBuffer;
+	ID3D11DepthStencilView* mDepthStencilView;
+	ID3D11RasterizerState* mRasterizerState;
+	ID3D11BlendState* mAlphaBlendStateEnabled;
+	ID3D11BlendState* mAlphaBlendStateDisabled;
+	ID3D11DepthStencilState* mDepthStencilStateEnabled;
+	ID3D11DepthStencilState* mDepthStencilStateDisabled;
 
+    bool mVsync;
+    int mGPUMemory;
+    char* mGPUDescription[256];
 };
 
