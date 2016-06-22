@@ -66,6 +66,7 @@ DxManager::~DxManager()
 		mDeviceContext->Release();
 		mDeviceContext = 0;
 	}
+
 	if (mDevice)
 	{
 		mDevice->Release();
