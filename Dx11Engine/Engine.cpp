@@ -25,7 +25,7 @@ bool Engine::InitGraphics(HWND _hwnd)
 bool Engine::Init(HINSTANCE _hinstance, HWND _hwnd)
 {
 	mGraphics->Init();
-	return false;
+	return true;
 }
 
 void Engine::Update()
