@@ -21,6 +21,10 @@ DxManager::DxManager()
 
 DxManager::~DxManager()
 {
+	if (mSwapChain)
+	{
+		mSwapChain->SetFullscreenState(false, NULL);
+	}
 	if (mAlphaBlendStateEnabled)
 	{
 		mAlphaBlendStateEnabled->Release();
@@ -84,10 +88,9 @@ bool DxManager::Init(int _width, int _height, bool _vsync, HWND _hwnd, bool _ful
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
 	IDXGIOutput* adapterOutput;
-	UINT numModes, i, numerator, denominator, stringLength;
+	UINT numModes, numerator, denominator, stringLength;
 	DXGI_MODE_DESC* displayModeList;
-	DXGI_ADAPTER_DESC* adapterDesc;
-	ID3D11Texture2D* backBuffer;
+	DXGI_ADAPTER_DESC adapterDesc;
 	INT error;
 
 	//vsync setting copy
@@ -114,7 +117,51 @@ bool DxManager::Init(int _width, int _height, bool _vsync, HWND _hwnd, bool _ful
 		MessageBox(NULL, "EnumOutputs() failed", "Error", MB_OK);
 		return false;
 	}
+
+	res = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
+	if (FAILED(res))
+	{
+		MessageBox(NULL, "GetDisplayModeList() failed", "Error", MB_OK);
+		return false;
+	}
+
+	displayModeList = new DXGI_MODE_DESC[numModes];
+	res = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
+	if (FAILED(res))
+	{
+		MessageBox(NULL, "GetDisplayModeList() failed", "Error", MB_OK);
+		return false;
+	}
+
+	for (UINT i = 0; i < numModes; i++)
+	{
+		if (displayModeList[i].Width == (UINT)_width && displayModeList[i].Height == (UINT)_height)
+		{
+			numerator = displayModeList[i].RefreshRate.Numerator;
+			denominator = displayModeList[i].RefreshRate.Denominator;
+		}
+	}
+
+	if (numerator == 0 && denominator == 0)
+	{
+		MessageBox(NULL, "invalid denominator and numerator failed", "Error", MB_OK);
+		return false;
+	}
+
+	res = adapter->GetDesc(&adapterDesc);
+	if (numerator == 0 && denominator == 0)
+	{
+		MessageBox(NULL, "adapter->GetDesc() failed", "Error", MB_OK);
+		return false;
+	}
+
+	mGPUMemory = (INT)(adapterDesc.DedicatedVideoMemory >> 20);
+
+	error = wcstombs_s((size_t*)&stringLength, mGPUDescription, 128, adapterDesc.Description, 128);
 	
+
+
+
 	return false;
 }
 
@@ -136,6 +183,12 @@ void DxManager::EnableZTest(bool en)
 
 bool DxManager::initSwapChain(HWND hwnd, bool fullscreen, int width, int height, UINT numerator, UINT denominator)
 {
+	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	D3D_FEATURE_LEVEL featureLevel;
+	HRESULT res;
+	
+	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+
 	return false;
 }
 

@@ -43,6 +43,6 @@ private:
 
     bool mVsync;
     int mGPUMemory;
-    char* mGPUDescription[256];
+    char mGPUDescription[256];
 };
 
