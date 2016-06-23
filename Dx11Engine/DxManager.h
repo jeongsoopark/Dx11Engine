@@ -15,7 +15,7 @@ public:
     void EndScene();
 
     void EnableAlphaBlending(bool en);
-    void EnableZTest(bool en);
+    void EnableZBuffer(bool en);
 
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetDeviceContext();
@@ -23,10 +23,11 @@ public:
 private:
     bool initSwapChain(HWND hwnd, bool fullscreen, int width, int height, UINT numerator, UINT denominator);
     bool initDepthBuffer(int width, int height);
+	bool initZbuffer();
     bool initDepthStencilBuffer();
     bool initStencilView();
     bool initRasterizerState();
-    bool initViewport(int width, int height);
+    void initViewport(int width, int height);
     bool initAlphaBlending();
 
     IDXGISwapChain* mSwapChain;
@@ -36,8 +37,10 @@ private:
 	ID3D11Texture2D* mDepthStencilBuffer;
 	ID3D11DepthStencilView* mDepthStencilView;
 	ID3D11RasterizerState* mRasterizerState;
+
 	ID3D11BlendState* mAlphaBlendStateEnabled;
 	ID3D11BlendState* mAlphaBlendStateDisabled;
+
 	ID3D11DepthStencilState* mDepthStencilStateEnabled;
 	ID3D11DepthStencilState* mDepthStencilStateDisabled;
 

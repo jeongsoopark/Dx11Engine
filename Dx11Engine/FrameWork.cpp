@@ -22,16 +22,25 @@ FrameWork::~FrameWork()
 	{
 		ChangeDisplaySettings(NULL, 0);
 	}
+
+	Engine::GetEngine()->Release();
+
 	UnregisterClass(mApplicationName, mHIntance);
 	mHIntance = nullptr;
 }
 
 bool FrameWork::Init()
 {
-	if (!createDxWindow(mApplicationName, WINDOW_POS_X, WINDOW_POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT))
+	if (!createDxWindow(mApplicationName, SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT))
 	{
 		return false;
 	}
+
+	if (!Engine::GetEngine()->Init(mHIntance, Engine::GetEngine()->GetGraphics()->GetHwnd()))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -50,8 +59,7 @@ void FrameWork::Run()
 		}
 		else
 		{
-			// update and rendering loop
-		
+			Engine::GetEngine()->Run();
 		}
 	}
 }
@@ -112,8 +120,23 @@ bool FrameWork::createDxWindow(char* windowName, int x, int y, int width, int he
 	if (hwnd == NULL)
 	{
 		MessageBox(NULL, "CreateWindowEX() failed", "Error", MB_OK);
+		Engine::GetEngine()->Release();
 		PostQuitMessage(0);
 	}
+
+	if (!Engine::GetEngine()->InitGraphics(hwnd))
+	{
+		MessageBox(NULL, "Init Directx 11 failed", "Error", MB_OK);
+		Engine::GetEngine()->Release();
+		PostQuitMessage(0);
+		UnregisterClass(mApplicationName, mHIntance);
+		mHIntance = nullptr;
+		DestroyWindow(hwnd);
+		return false;
+	}
+
+	Engine::GetEngine()->GetGraphics()->SetHwnd(hwnd);
+
 	ShowWindow(hwnd, SW_SHOW);
 	SetForegroundWindow(hwnd);
 	SetFocus(hwnd);
