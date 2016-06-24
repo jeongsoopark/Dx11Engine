@@ -150,6 +150,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	HDC hdc;
 	switch (message)
 	{
+	case WM_KEYDOWN:
+		if (wParam == VK_ESCAPE)
+		{
+			PostQuitMessage(0);
+			DestroyWindow(hwnd);
+		}
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
@@ -164,25 +171,5 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
