@@ -88,7 +88,7 @@ bool DxManager::Init(int _width, int _height, bool _vsync, HWND _hwnd, bool _ful
 	IDXGIFactory* factory = nullptr;
 	IDXGIAdapter* adapter = nullptr;
 	IDXGIOutput* adapterOutput = nullptr;
-	UINT numModes, numerator, denominator, stringLength;
+	UINT numModes, numerator, denominator;
 	DXGI_MODE_DESC* displayModeList = nullptr;
 	DXGI_ADAPTER_DESC adapterDesc;
 	ID3D11Texture2D* backBufferPtr = nullptr;
@@ -467,8 +467,8 @@ void DxManager::initViewport(int _width, int _height)
 {
 	D3D11_VIEWPORT viewport;
 
-	viewport.Width = _width;
-	viewport.Height = _height;
+	viewport.Width = (float)_width;
+	viewport.Height = (float)_height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;

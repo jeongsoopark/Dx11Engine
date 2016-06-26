@@ -43,6 +43,6 @@ private:
 	ID3D11Buffer* mMatrixBuffer;
 	char* mName;
 	bool mIsInit;
-
+	DXGI_MODE_DESC* displayModeList = nullptr;
 };
 
