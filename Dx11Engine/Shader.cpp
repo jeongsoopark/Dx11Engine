@@ -70,11 +70,17 @@ void Shader::End(ID3D11DeviceContext * _deviceContext)
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext * _deviceContext, ID3D11ShaderResourceView * _texture)
 {
+	_deviceContext->PSSetShaderResources(0, 1, &_texture);
 	return true;
 }
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext * _deviceContext, D3DXMATRIX _world, D3DXMATRIX _view, D3DXMATRIX _projection)
 {
+	HRESULT res; 
+	D3D11_MAPPED_SUBRESOURCE mappedResource; 
+	MatrixBufferType* dataPtr;
+	UINT bufferNumber;
+
 	return true;
 }
 
@@ -216,5 +222,21 @@ bool Shader::initShader(ID3D11Device* _device, HWND _hwnd, LPCSTR _vsFileName, L
 
 void Shader::OutputShaderError(ID3D10Blob * _msg, HWND _hwnd, LPCSTR _shaderFileName)
 {
-	char* compileErr
+	char* compileErr = (char*)_msg->GetBufferPointer();
+	ULONG bufferSize = _msg->GetBufferSize();
+
+	ofstream fout;
+	fout.open("shader_err.txt");
+
+	for (UINT i = 0; i < bufferSize; i++)
+	{
+		fout << compileErr[i];
+	}
+
+	fout.close();
+	_msg->Release();
+	_msg = nullptr;
+	
+	MessageBox(_hwnd, "Shader compilation error, check shader_err.txt", _shaderFileName, MB_OK);
+	return;
 }
