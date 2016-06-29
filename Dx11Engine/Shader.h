@@ -20,7 +20,7 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	virtual void Begin(ID3D11DeviceContext* _ieviceContext, int _indexCount);
+	virtual void Begin(ID3D11DeviceContext* _deviceContext, int _indexCount);
 	virtual void End(ID3D11DeviceContext* _deviceContext);
 
 	bool SetShaderParameters(ID3D11DeviceContext* _deviceContext, ID3D11ShaderResourceView* _texture);
@@ -34,7 +34,7 @@ protected:
 	virtual bool Init(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileName, LPCSTR _vertexFuncName, LPCSTR _pixelFuncName);
 
 private:
-	bool initShader(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileName, LPCSTR _vertexFuncName, LPCSTR _pixelFuncName);
+	bool initShader(ID3D11Device* _device, HWND _hwnd, LPCSTR _vsFileName, LPCSTR _psFileName, LPCSTR _vertexFuncName, LPCSTR _pixelFuncName);
 	void OutputShaderError(ID3D10Blob* _msg, HWND _hwnd, LPCSTR _shaderFileName);
 
 	ID3D11VertexShader* mVertexShader;
