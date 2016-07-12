@@ -79,7 +79,6 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext * _deviceContext, D3DXMATRI
 	HRESULT res; 
 	D3D11_MAPPED_SUBRESOURCE mappedResource; 
 	MatrixBufferType* dataPtr;
-	UINT bufferNumber;
 
 	D3DXMatrixTranspose(&_world, &_world);
 	D3DXMatrixTranspose(&_view, &_view);
@@ -94,8 +93,9 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext * _deviceContext, D3DXMATRI
 	dataPtr->worldMatrix = _world;
 	dataPtr->viewMatrix = _view;
 	dataPtr->projectionMatrix = _projection;
+	_deviceContext->Unmap(mMatrixBuffer, 0);
 
-	_deviceContext->unmap(mMatrixBuffer, 0);
+	_deviceContext->VSSetConstantBuffers(0, 1, &mMatrixBuffer);
 
 	return true;
 }
