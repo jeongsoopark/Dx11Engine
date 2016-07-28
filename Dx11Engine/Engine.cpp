@@ -55,7 +55,7 @@ void Engine::Update()
 
 void Engine::Render()
 {
-	mGraphics->BeginScene(1.0, 1.0, 1.0, 1.0);
+	mGraphics->BeginScene(0.0, 0.0, 0.0, 1.0);
 
 	//temp
 	D3DXMATRIX world;
