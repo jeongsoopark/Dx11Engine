@@ -115,13 +115,13 @@ void VertexBuffer::Render(ID3D11DeviceContext * _deviceContext)
 	mShader->Begin(_deviceContext, mIndexCount);
 
 	_deviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-	_deviceContext->IASetIndexBuffer(&mIndexBuffer, DXGI_FORMAT_R32_UINT);
+	_deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 }
 
-VertexType * VertexBuffer::GetVertices()
+VertexBuffer::VertexType * VertexBuffer::GetVertices()
 {
 	return nullptr;
 }
