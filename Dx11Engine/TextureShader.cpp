@@ -1,6 +1,13 @@
 #include "TextureShader.h"
 
 
+TextureShader::TextureShader(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileName, LPCSTR _vsFuncName, LPCTSTR _psFuncName) :
+    Shader(_device, _hwnd, _shaderFileName, _vsFuncName, _psFuncName)
+{
+    mIsInit = InitSamplerState(_device);
+}
+
+
 
 TextureShader::TextureShader()
 {
@@ -22,7 +29,11 @@ bool TextureShader::Init(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileNa
 	{
 		return false;
 	}
+	return true;
+}
 
+bool TextureShader::InitSamplerState(ID3D11Device * _device)
+{
 	D3D11_SAMPLER_DESC samplerDesc;
 	HRESULT res;
 
@@ -47,7 +58,6 @@ bool TextureShader::Init(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileNa
 	{
 		return false;
 	}
-
 	return true;
 }
 

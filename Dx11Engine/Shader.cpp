@@ -119,10 +119,10 @@ bool Shader::Init(ID3D11Device * _device, HWND _hwnd, LPCSTR _shaderFileName, LP
 
 	char vsFileName[100];
 	strcpy_s(vsFileName, _shaderFileName);
-	strcpy_s(vsFileName, ".vs\0");
+	strcat_s(vsFileName, ".vs\0");
 	char psFileName[100];
 	strcpy_s(psFileName, _shaderFileName);
-	strcpy_s(psFileName, ".ps\0");
+	strcat_s(psFileName, ".ps\0");
 
 	return initShader(_device, _hwnd, vsFileName, psFileName, _vertexFuncName, _pixelFuncName);
 }
@@ -220,7 +220,7 @@ bool Shader::initShader(ID3D11Device* _device, HWND _hwnd, LPCSTR _vsFileName, L
 	psBuffer = nullptr;
 
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(matrixBufferDesc);
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;

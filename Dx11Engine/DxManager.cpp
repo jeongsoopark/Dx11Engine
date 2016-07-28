@@ -271,12 +271,12 @@ void DxManager::EnableZBuffer(bool _enable)
 
 ID3D11Device * DxManager::GetDevice()
 {
-	return nullptr;
+	return mDevice;
 }
 
 ID3D11DeviceContext * DxManager::GetDeviceContext()
 {
-	return nullptr;
+	return mDeviceContext;
 }
 
 bool DxManager::initSwapChain(HWND _hwnd, bool _fullscreen, int _width, int _height, UINT _numerator, UINT _denominator)

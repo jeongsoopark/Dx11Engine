@@ -31,6 +31,7 @@ public:
 
 
 protected:
+	bool mIsInit;
 	virtual bool Init(ID3D11Device* _device, HWND _hwnd, LPCSTR _shaderFileName, LPCSTR _vertexFuncName, LPCSTR _pixelFuncName);
 
 private:
@@ -42,7 +43,6 @@ private:
 	ID3D11InputLayout* mLayout;
 	ID3D11Buffer* mMatrixBuffer;
 	char* mName;
-	bool mIsInit;
 	DXGI_MODE_DESC* displayModeList = nullptr;
 };
 

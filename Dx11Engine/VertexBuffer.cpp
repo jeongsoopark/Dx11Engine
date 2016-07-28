@@ -38,6 +38,7 @@ bool VertexBuffer::Init(ID3D11Device * _device, Shader * _shader, float _size, b
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT res;
+	mShader = _shader;
 
 	mVertexCount = 4;
 	mIndexCount = 6;
@@ -66,7 +67,7 @@ bool VertexBuffer::Init(ID3D11Device * _device, Shader * _shader, float _size, b
 	vertexBufferDesc.Usage = _writable ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexType) * mVertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = _writable ? D3D11_CPU_ACCESS_WRITE : D3D11_CPU_ACCESS_READ;
+	vertexBufferDesc.CPUAccessFlags = _writable ? D3D11_CPU_ACCESS_WRITE : 0;
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 
@@ -83,12 +84,12 @@ bool VertexBuffer::Init(ID3D11Device * _device, Shader * _shader, float _size, b
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.ByteWidth = sizeof(ULONG) * mIndexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;
 	indexBufferDesc.StructureByteStride = 0;
 
 	indexData.pSysMem = indices;
-	indexData.pSysMem = 0;
+	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
 	res = _device->CreateBuffer(&indexBufferDesc, &indexData, &mIndexBuffer);
@@ -118,6 +119,7 @@ void VertexBuffer::Render(ID3D11DeviceContext * _deviceContext)
 	_deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    mShader->End(_deviceContext);
 
 }
 
