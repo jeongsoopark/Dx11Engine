@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include <D3DX11tex.h>
 
-
+//object abbstration for one texture
 class Texture
 {
 public:
