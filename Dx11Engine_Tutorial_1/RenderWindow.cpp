@@ -73,3 +73,14 @@ void RenderWindow::RegisterWindowsClass()
 	wc.cbSize = sizeof(WNDCLASSEX);
 	RegisterClassEx(&wc);
 }
+
+
+bool RenderWindow::ProcessMessages()
+{
+	MSG msg;
+	ZeroMemory(&msg, sizeof(MSG));
+
+
+
+}
+
