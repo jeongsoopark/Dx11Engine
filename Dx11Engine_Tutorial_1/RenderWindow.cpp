@@ -1,6 +1,4 @@
-#include "RenderWindow.h"
-#include "windows.h"
-
+#include "WindowContainer.h"
 
 RenderWindow::RenderWindow()
 {
@@ -16,7 +14,7 @@ RenderWindow::~RenderWindow()
 	}
 }
 
-bool RenderWindow::Initialize(HINSTANCE hInstance, std::string windowTitle, std::string windowClass, int width, int height)
+bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInstance, std::string windowTitle, std::string windowClass, int width, int height)
 {
 	this->mHInstance = hInstance;
 	this->mWidth = width;
@@ -41,7 +39,7 @@ bool RenderWindow::Initialize(HINSTANCE hInstance, std::string windowTitle, std:
 		NULL,
 		NULL,
 		this->mHInstance,
-		nullptr);
+		pWindowContainer);
 
 	if (this->mHandle == NULL) //in case of failure creating window
 	{
@@ -56,11 +54,36 @@ bool RenderWindow::Initialize(HINSTANCE hInstance, std::string windowTitle, std:
 	return false;
 }
 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_NCCREATE:
+	{
+		const CREATESTRUCTW* const 
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+	case WM_CHAR:
+	{
+		unsigned char letter = static_cast<unsigned char>(wParam);
+		return 0;
+	}
+	case WM_KEYDOWN:
+	{
+		unsigned char keycode = static_cast<unsigned char>(wParam);
+		return 0;
+	}
+
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+}
+
 void RenderWindow::RegisterWindowsClass()
 {
 	WNDCLASSEX wc; 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = DefWindowProc;
+	wc.lpfnWndProc = WindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = this->mHInstance;
@@ -79,8 +102,26 @@ bool RenderWindow::ProcessMessages()
 {
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
+	if (PeekMessage(&msg, this->mHandle, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	//key down message here
+
+	if (msg.message == WM_NULL)
+	{
+		if (!IsWindow(this->mHandle))
+		{
+			this->mHandle = NULL;
+			UnregisterClass(this->mWindow_class.c_str(), this->mHInstance);
+			return false;
+		}
+	}
 
 
+	return true;
 
 }
 
