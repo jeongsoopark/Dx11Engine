@@ -51,6 +51,7 @@ bool Engine::Init(HINSTANCE _hinstance, HWND _hwnd)
 
 void Engine::Update()
 {
+	
 }
 
 void Engine::Render()

@@ -20,3 +20,11 @@ bool Engine::ProcessMessages()
 {
 	return this->mRenderWindow.ProcessMessages();
 }
+
+void Engine::Update()
+{
+	while (!mKeyboard.IsCharBufferEmpty())
+	{
+
+	}
+}

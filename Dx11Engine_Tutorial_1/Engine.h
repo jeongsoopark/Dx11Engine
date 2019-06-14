@@ -12,5 +12,6 @@ public:
 	bool ProcessMessages();
 
 
+	void Update();
 };
 

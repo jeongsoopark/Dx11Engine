@@ -132,6 +132,8 @@
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="ErrLogger.cpp" />
+    <ClCompile Include="KeyboardClass.cpp" />
+    <ClCompile Include="KeyboardEvent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="StringConverter.cpp" />
@@ -140,6 +142,8 @@
   <ItemGroup>
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrLogger.h" />
+    <ClInclude Include="KeyboardClass.h" />
+    <ClInclude Include="KeyboardEvent.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="WindowContainer.h" />

@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderWindow.h"
+#include "KeyboardClass.h"
 
 class WindowContainer
 {
@@ -7,10 +8,11 @@ public:
 	WindowContainer();
 	~WindowContainer();
 
-	
+	LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
 protected:
 	RenderWindow mRenderWindow;
+	KeyboardClass mKeyboard;
 };
 
