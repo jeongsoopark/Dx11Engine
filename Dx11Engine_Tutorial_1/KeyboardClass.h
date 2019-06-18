@@ -14,7 +14,7 @@ public:
 	KeyboardEvent ReadKey();
 	unsigned char ReadChar();
 
-	void OnKeyPress(const unsigned char key);
+	void OnKeyPressed(const unsigned char key);
 	void OnKeyReleased(const unsigned char key);
 	void OnChar(const unsigned char key);
 	void EnableAutoRepeatKeys();

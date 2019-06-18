@@ -17,7 +17,7 @@ public:
 	bool IsReleased() const;
 	bool IsValid() const;
 
-	unsigned int GetKeyCode() const;
+	unsigned char GetKeyCode() const;
 
 private :
 	EventType mType;

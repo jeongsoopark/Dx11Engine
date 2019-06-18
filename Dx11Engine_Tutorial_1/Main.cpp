@@ -14,10 +14,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	Engine engine;
 	engine.Initialize(hInstance, "my windows", "myclass", 800, 600);
-
 	while (engine.ProcessMessages())
 	{
 
+		engine.Update();
 	}
 
 

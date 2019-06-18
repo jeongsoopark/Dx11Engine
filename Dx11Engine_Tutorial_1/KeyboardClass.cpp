@@ -59,7 +59,7 @@ unsigned char KeyboardClass::ReadChar()
 }
 
 
-void KeyboardClass::OnKeyPress(const unsigned char key)
+void KeyboardClass::OnKeyPressed(const unsigned char key)
 {
 	this->keyBuffer.push(KeyboardEvent(KeyboardEvent::Press, key));
 }

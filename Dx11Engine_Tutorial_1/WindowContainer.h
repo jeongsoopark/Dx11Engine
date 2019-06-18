@@ -1,6 +1,7 @@
 #pragma once
 #include "RenderWindow.h"
 #include "KeyboardClass.h"
+#include "MouseClass.h"
 
 class WindowContainer
 {
@@ -14,5 +15,6 @@ public:
 protected:
 	RenderWindow mRenderWindow;
 	KeyboardClass mKeyboard;
+	MouseClass mMouse;
 };
 
