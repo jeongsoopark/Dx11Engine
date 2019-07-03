@@ -9,6 +9,7 @@ class RenderWindow
 public:
 	RenderWindow();
 	~RenderWindow();
+	HWND GetHwnd() { return mHandle; };
 	bool Initialize(WindowContainer* pWindowContainer, HINSTANCE hInstance, std::string windowTitle, std::string windowClass, int width, int height);
 	bool ProcessMessages();
 
