@@ -21,10 +21,9 @@ private:
 	ComPtr<IDXGISwapChain> mSwapChain;
 	ComPtr<ID3D11RenderTargetView> mRenderTargetView;
 
-	ComPtr<ID3D11InputLayout> mInputLayout;
-	ComPtr<ID3D10Blob> mVertexShaderBuffer;
 
 	VertexShader mVertexShader;
+	PixelShader mPixelShader;
 
 };
 

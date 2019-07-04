@@ -109,7 +109,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Graphics\vertexshader.hlsl">
+    <FxCompile Include="pixelshader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="vertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
