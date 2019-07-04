@@ -51,7 +51,7 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
 	SetForegroundWindow(this->mHandle);
 	SetFocus(this->mHandle);
 
-	return false;
+	return true;
 }
 
 LRESULT HandleMsgRedirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

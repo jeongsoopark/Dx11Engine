@@ -18,6 +18,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 
 		engine.Update();
+		engine.Render();
 	}
 
 

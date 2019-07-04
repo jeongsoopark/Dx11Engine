@@ -58,3 +58,9 @@ void Engine::Update()
 		OutputDebugString(outMsg.c_str());
 	}
 }
+
+
+void Engine::Render()
+{
+	mGraphics.RenderFrame();
+}
