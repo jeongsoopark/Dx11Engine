@@ -1,5 +1,4 @@
 #pragma once
-#pragma comment(lib, "D3DCompiler.lib")
 
 #include "../ErrLogger.h"
 #include <d3d11.h>
@@ -7,6 +6,7 @@
 #include <d3dcompiler.h>
 
 
+#pragma comment(lib, "D3DCompiler.lib")
 using namespace Microsoft::WRL;
 class VertexShader
 {
