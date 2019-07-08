@@ -35,7 +35,7 @@ void Graphics::RenderFrame()
 	float backColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	mDeviceContext->OMSetRenderTargets(1, mRenderTargetView.GetAddressOf(), mDepthStencilView.Get());
 	mDeviceContext->ClearRenderTargetView(mRenderTargetView.Get(), backColor);
-	mDeviceContext->ClearDepthStencilView(mDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 0.5, 0);
+	mDeviceContext->ClearDepthStencilView(mDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 
 	mDeviceContext->RSSetState(mRasterizerState.Get());
 	mDeviceContext->OMSetDepthStencilState(mDepthStencilState.Get(), 0);
@@ -177,6 +177,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	viewport.Height = (float)height;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 	mDeviceContext->RSSetViewports(1, &viewport);
 
 	//create depth stencil state
