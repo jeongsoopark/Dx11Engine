@@ -21,13 +21,21 @@ private:
 	ComPtr<ID3D11Device> mDevice;
 	ComPtr<ID3D11DeviceContext> mDeviceContext;
 	ComPtr<IDXGISwapChain> mSwapChain;
+
 	ComPtr<ID3D11RenderTargetView> mRenderTargetView;
+	ComPtr<ID3D11DepthStencilView> mDepthStencilView;
+	ComPtr<ID3D11Texture2D> mDepthStencilBuffer;
 
 
 	VertexShader mVertexShader;
 	PixelShader mPixelShader;
 
-	ComPtr<ID3D11Buffer> mVertexBuffer;
+	ComPtr<ID3D11Buffer> mVertexBuffer1;
+	ComPtr<ID3D11Buffer> mVertexBuffer2;
+
+	ComPtr<ID3D11RasterizerState> mRasterizerState;
+	ComPtr<ID3D11DepthStencilState> mDepthStencilState;
+
 
 };
 
