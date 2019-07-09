@@ -7,10 +7,12 @@ struct Vertex
 	Vertex(float x, float y, float z)
 		: pos(x, y, z) {}
 
-	Vertex(float x, float y, float z, float r, float g, float b)
-		: pos(x, y, z), color(r, g, b)
+
+	Vertex(float x, float y, float z, float u, float v)
+		: pos(x, y, z), texcoord(u, v)
 	{}
 
 	DirectX::XMFLOAT3 pos;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT2 texcoord;
+
 };

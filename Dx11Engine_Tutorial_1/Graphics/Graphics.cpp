@@ -40,22 +40,20 @@ void Graphics::RenderFrame()
 	mDeviceContext->RSSetState(mRasterizerState.Get());
 	mDeviceContext->OMSetDepthStencilState(mDepthStencilState.Get(), 0);
 
+	mDeviceContext->IASetIndexBuffer(mIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	mDeviceContext->IASetInputLayout(mVertexShader.GetInputLayout());
 	mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDeviceContext->PSSetSamplers(0, 1, mSamplerState.GetAddressOf());
 
+	mDeviceContext->PSSetShaderResources(0, 1, mSRV.GetAddressOf());
 	mDeviceContext->VSSetShader(mVertexShader.GetShader(), NULL, 0);
 	mDeviceContext->PSSetShader(mPixelShader.GetShader(), NULL, 0);
 
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0;
-
-	//green
-	mDeviceContext->IASetVertexBuffers(0, 1, mVertexBuffer2.GetAddressOf(), &stride, &offset);
-	mDeviceContext->Draw(3, 0);
-
 	//blue
-	mDeviceContext->IASetVertexBuffers(0, 1, mVertexBuffer1.GetAddressOf(), &stride, &offset);
-	mDeviceContext->Draw(3, 0);
+	mDeviceContext->IASetVertexBuffers(0, 1, mVertexBuffer.GetAddressOf(), mVertexBuffer.StridePtr(), &offset);
+	mDeviceContext->DrawIndexed(6, 0, 0);
 
 	mSwapChain->Present(1, NULL);
 }
@@ -193,11 +191,37 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	D3D11_RASTERIZER_DESC rsDesc;
 	ZeroMemory(&rsDesc, sizeof(rsDesc));
 	rsDesc.FillMode = D3D11_FILL_SOLID;
-	rsDesc.CullMode = D3D11_CULL_BACK;
+	rsDesc.CullMode = D3D11_CULL_NONE;
 	hr = mDevice->CreateRasterizerState(&rsDesc, mRasterizerState.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrLogger::Log(hr, "Failed to create rasterizer state");
+		return false;
+	}
+
+	//create sampler state
+	D3D11_SAMPLER_DESC smpDesc;
+	ZeroMemory(&smpDesc, sizeof(smpDesc));
+	smpDesc.Filter = D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+	smpDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	smpDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	smpDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	smpDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	smpDesc.MinLOD = 0;
+	smpDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = mDevice->CreateSamplerState(&smpDesc, mSamplerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrLogger::Log(hr, "Failed to create sampler state");
+		return false;
+	}
+
+
+	hr = DirectX::CreateWICTextureFromFile(mDevice.Get(), L"Texture\\test.jpg", nullptr, mSRV.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrLogger::Log(hr, "Failed to load texture");
 		return false;
 	}
 
@@ -228,8 +252,8 @@ bool Graphics::InitializeShaders()
 
 	D3D11_INPUT_ELEMENT_DESC layout[] = 
 	{
-		{"SV_POSITION",	0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",		0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"POSITION",	0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD",	0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT nElements = ARRAYSIZE(layout);
 
@@ -250,51 +274,42 @@ bool Graphics::InitializeShaders()
 
 bool Graphics::InitializeScene()
 {
-	//blue
-	Vertex v1[] = {
-		Vertex(0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
-		Vertex(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f)
-	};
-
-	//green
-	Vertex v2[] = {
-		Vertex(0.25f, 0.0f, 0.25f, 0.0f, 1.0f, 0.0f),
-		Vertex(0.0, 0.25f, 0.25f, 0.0f, 1.0f, 0.0f),
-		Vertex(0.25f, 0.25f, 0.25f, 0.0f, 1.0f, 0.0f)
-	};
-
-
-	D3D11_BUFFER_DESC vbDesc;
-	ZeroMemory(&vbDesc, sizeof(D3D11_BUFFER_DESC));
-
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.ByteWidth = sizeof(Vertex)* ARRAYSIZE(v1);
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbDesc.CPUAccessFlags = 0;
-	vbDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vbData;
-	ZeroMemory(&vbData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vbData.pSysMem = v1;
 
 	HRESULT hr;
-	hr = mDevice->CreateBuffer(&vbDesc, &vbData, mVertexBuffer1.GetAddressOf());
+	UINT indices[] = { 0, 1, 2, 2, 1, 3 };
+	D3D11_BUFFER_DESC ibDesc;
+	ZeroMemory(&ibDesc, sizeof(D3D11_BUFFER_DESC));
+	ibDesc.Usage = D3D11_USAGE_DEFAULT;
+	ibDesc.ByteWidth = sizeof(UINT)* ARRAYSIZE(indices);
+	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibDesc.CPUAccessFlags = 0;
+	ibDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA ibData;
+	ZeroMemory(&ibData, sizeof(D3D11_SUBRESOURCE_DATA));
+	ibData.pSysMem = indices;
+
+	hr = mDevice->CreateBuffer(&ibDesc, &ibData, mIndexBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrLogger::Log(hr, "Failed to create index buffer");
+		return false;
+	}
+
+	Vertex v1[] = {
+
+		Vertex(-0.5f, -0.5f, 0.5f,	0.0f, 0.0f),
+		Vertex(-0.5f, 0.5f, 0.5f,	0.0f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.5f,	1.0f, 0.0f),
+		Vertex(0.5f, 0.5f, 0.5f,	1.0f, 1.0f)
+	};
+
+	hr = mVertexBuffer.Initialize(mDevice.Get(), v1, ARRAYSIZE(v1));
 	if (FAILED(hr))
 	{
 		ErrLogger::Log(hr, "Failed to create vertex buffer 1");
 		return false;
 	}
-
-	vbData.pSysMem = v2;
-
-	hr = mDevice->CreateBuffer(&vbDesc, &vbData, mVertexBuffer2.GetAddressOf());
-	if (FAILED(hr))
-	{
-		ErrLogger::Log(hr, "Failed to create vertex buffer 2");
-		return false;
-	}
-
 
 	return true;
 }

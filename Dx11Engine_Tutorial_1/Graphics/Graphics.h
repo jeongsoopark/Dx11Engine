@@ -2,6 +2,8 @@
 #include "AdapterReader.h"
 #include "Shader.h"
 #include "Vertex.h"
+#include <WICTextureLoader.h>
+#include "VertexBuffer.h"
 
 class Graphics
 {
@@ -31,10 +33,14 @@ private:
 	PixelShader mPixelShader;
 
 	ComPtr<ID3D11Buffer> mVertexBuffer1;
-	ComPtr<ID3D11Buffer> mVertexBuffer2;
+	ComPtr<ID3D11Buffer> mIndexBuffer;
+	VertexBuffer<Vertex> mVertexBuffer;
 
 	ComPtr<ID3D11RasterizerState> mRasterizerState;
 	ComPtr<ID3D11DepthStencilState> mDepthStencilState;
+
+	ComPtr<ID3D11SamplerState> mSamplerState;
+	ComPtr<ID3D11ShaderResourceView> mSRV;
 
 
 };
