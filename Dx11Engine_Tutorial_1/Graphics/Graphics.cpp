@@ -276,20 +276,9 @@ bool Graphics::InitializeScene()
 {
 
 	HRESULT hr;
-	UINT indices[] = { 0, 1, 2, 2, 1, 3 };
-	D3D11_BUFFER_DESC ibDesc;
-	ZeroMemory(&ibDesc, sizeof(D3D11_BUFFER_DESC));
-	ibDesc.Usage = D3D11_USAGE_DEFAULT;
-	ibDesc.ByteWidth = sizeof(UINT)* ARRAYSIZE(indices);
-	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibDesc.CPUAccessFlags = 0;
-	ibDesc.MiscFlags = 0;
+	DWORD indices[] = { 0, 1, 2, 2, 1, 3 };
 
-	D3D11_SUBRESOURCE_DATA ibData;
-	ZeroMemory(&ibData, sizeof(D3D11_SUBRESOURCE_DATA));
-	ibData.pSysMem = indices;
-
-	hr = mDevice->CreateBuffer(&ibDesc, &ibData, mIndexBuffer.GetAddressOf());
+	hr = mIndexBuffer.Initialize(mDevice.Get(), indices, ARRAYSIZE(indices));
 	if (FAILED(hr))
 	{
 		ErrLogger::Log(hr, "Failed to create index buffer");

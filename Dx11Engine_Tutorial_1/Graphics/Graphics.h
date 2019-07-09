@@ -4,6 +4,7 @@
 #include "Vertex.h"
 #include <WICTextureLoader.h>
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 class Graphics
 {
@@ -32,8 +33,7 @@ private:
 	VertexShader mVertexShader;
 	PixelShader mPixelShader;
 
-	ComPtr<ID3D11Buffer> mVertexBuffer1;
-	ComPtr<ID3D11Buffer> mIndexBuffer;
+	IndexBuffer mIndexBuffer;
 	VertexBuffer<Vertex> mVertexBuffer;
 
 	ComPtr<ID3D11RasterizerState> mRasterizerState;
