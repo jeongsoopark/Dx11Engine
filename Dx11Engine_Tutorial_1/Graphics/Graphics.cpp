@@ -45,6 +45,17 @@ void Graphics::RenderFrame()
 	mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mDeviceContext->PSSetSamplers(0, 1, mSamplerState.GetAddressOf());
 
+	//setting constnat buffer
+	mConstantBuffer.data.xOffset = 0.5;
+	mConstantBuffer.data.yOffset = 0.8;
+	if (!mConstantBuffer.ApplyChanges())
+	{
+		return;
+	}
+
+	mDeviceContext->VSSetConstantBuffers(0, 1, mConstantBuffer.GetAddressOf());
+
+	//setting SRV texture
 	mDeviceContext->PSSetShaderResources(0, 1, mSRV.GetAddressOf());
 	mDeviceContext->VSSetShader(mVertexShader.GetShader(), NULL, 0);
 	mDeviceContext->PSSetShader(mPixelShader.GetShader(), NULL, 0);
@@ -297,6 +308,13 @@ bool Graphics::InitializeScene()
 	if (FAILED(hr))
 	{
 		ErrLogger::Log(hr, "Failed to create vertex buffer 1");
+		return false;
+	}
+
+	hr = mConstantBuffer.Initialize(mDevice.Get(), mDeviceContext.Get());
+	if (FAILED(hr))
+	{
+		ErrLogger::Log(hr, "Failed to initialize constant buffer ");
 		return false;
 	}
 

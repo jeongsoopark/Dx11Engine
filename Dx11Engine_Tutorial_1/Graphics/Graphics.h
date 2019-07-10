@@ -5,6 +5,7 @@
 #include <WICTextureLoader.h>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "ConstantBuffer.h"
 
 class Graphics
 {
@@ -35,6 +36,7 @@ private:
 
 	IndexBuffer mIndexBuffer;
 	VertexBuffer<Vertex> mVertexBuffer;
+	ConstantBuffer<ConstantBufferVSType> mConstantBuffer;
 
 	ComPtr<ID3D11RasterizerState> mRasterizerState;
 	ComPtr<ID3D11DepthStencilState> mDepthStencilState;
