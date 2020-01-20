@@ -13,7 +13,9 @@ Graphics::~Graphics()
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
-	if (!InitializeDirectX(hwnd, width, height))
+	this->windowWidth = width;
+	this->windowHeight = height;
+	if (!InitializeDirectX(hwnd))
 	{
 		return false;
 	}
@@ -45,9 +47,27 @@ void Graphics::RenderFrame()
 	mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mDeviceContext->PSSetSamplers(0, 1, mSamplerState.GetAddressOf());
 
-	//setting constnat buffer
-	mConstantBuffer.data.xOffset = 0.5;
-	mConstantBuffer.data.yOffset = 0.8;
+	//setting constant buffer
+	DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();
+
+	static DirectX::XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f);
+	static DirectX::XMVECTOR lookAtPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	static DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX viewMat = DirectX::XMMatrixLookAtLH(eyePos, lookAtPos, upVector);
+
+	float fovDegrees = 90.f;
+	float fovRad = (fovDegrees / 360.f) * DirectX::XM_2PI;
+	float aspectRatio = static_cast<float>(this->windowWidth) / static_cast<float>(this->windowHeight);
+	float nearZ = 0.1f;
+	float farZ = 1000.f;
+
+	static DirectX::XMMATRIX projMat = DirectX::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
+
+	mConstantBuffer.data.mat = worldMat * viewMat * projMat;
+
+
+	mConstantBuffer.data.mat = DirectX::XMMatrixTranspose(mConstantBuffer.data.mat);
+
 	if (!mConstantBuffer.ApplyChanges())
 	{
 		return;
@@ -75,7 +95,7 @@ void Graphics::ClearFrame(float * bgColor)
 	mSwapChain->Present(1, NULL);
 }
 
-bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
+bool Graphics::InitializeDirectX(HWND hwnd)
 {
 	std::vector<AdapterData> adapters = AdapterReader::GetAdapterData();
 
@@ -87,8 +107,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	DXGI_SWAP_CHAIN_DESC SwapChainDesc;
 	ZeroMemory(&SwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	SwapChainDesc.BufferDesc.Width = width;
-	SwapChainDesc.BufferDesc.Height = height;
+	SwapChainDesc.BufferDesc.Width = this->windowWidth;
+	SwapChainDesc.BufferDesc.Height = this->windowHeight;
 	SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
 	SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 	SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -152,8 +172,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	D3D11_TEXTURE2D_DESC DSBufferDesc;
 	ZeroMemory(&DSBufferDesc, sizeof(DSBufferDesc));
 
-	DSBufferDesc.Width = width;
-	DSBufferDesc.Height = height;
+	DSBufferDesc.Width = this->windowWidth;
+	DSBufferDesc.Height = this->windowHeight;
 	DSBufferDesc.MipLevels = 1;
 	DSBufferDesc.ArraySize = 1;
 	DSBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -182,8 +202,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	//D3d11_viewport state
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-	viewport.Width = (float)width;
-	viewport.Height = (float)height;
+	viewport.Width = (float)this->windowWidth;
+	viewport.Height = (float)this->windowHeight;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 	viewport.MinDepth = 0.0f;
@@ -298,10 +318,10 @@ bool Graphics::InitializeScene()
 
 	Vertex v1[] = {
 
-		Vertex(-0.5f, -0.5f, 0.5f,	0.0f, 0.0f),
-		Vertex(-0.5f, 0.5f, 0.5f,	0.0f, 1.0f),
-		Vertex(0.5f, -0.5f, 0.5f,	1.0f, 0.0f),
-		Vertex(0.5f, 0.5f, 0.5f,	1.0f, 1.0f)
+		Vertex(-0.5f, -0.5f, 0.0f,	0.0f, 0.0f),
+		Vertex(-0.5f, 0.5f, 0.0f,	0.0f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.0f,	1.0f, 0.0f),
+		Vertex(0.5f, 0.5f, 0.0f,	1.0f, 1.0f)
 	};
 
 	hr = mVertexBuffer.Initialize(mDevice.Get(), v1, ARRAYSIZE(v1));

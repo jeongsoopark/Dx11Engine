@@ -18,7 +18,7 @@ public:
 	void ClearFrame(float* bgColor);
 
 private:
-	bool InitializeDirectX(HWND hwnd, int width, int height);
+	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();
 	bool InitializeScene();
 
@@ -36,13 +36,17 @@ private:
 
 	IndexBuffer mIndexBuffer;
 	VertexBuffer<Vertex> mVertexBuffer;
-	ConstantBuffer<ConstantBufferVSType> mConstantBuffer;
+	ConstantBuffer<CB_VS_vertexshader> mConstantBuffer;
 
 	ComPtr<ID3D11RasterizerState> mRasterizerState;
 	ComPtr<ID3D11DepthStencilState> mDepthStencilState;
 
 	ComPtr<ID3D11SamplerState> mSamplerState;
 	ComPtr<ID3D11ShaderResourceView> mSRV;
+
+
+	size_t windowWidth;
+	size_t windowHeight;
 
 
 };

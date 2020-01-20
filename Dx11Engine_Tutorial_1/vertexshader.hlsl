@@ -1,7 +1,6 @@
 cbuffer myCBuffer : register(b0)
 {
-    float xOffset;
-    float yOffset;
+    float4x4 mat;
 };
 
 
@@ -20,10 +19,8 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT inVertex) 
 {
     VS_OUTPUT vOut;
-    inVertex.inPosition.x += xOffset;
-    inVertex.inPosition.y += yOffset;
 
-    vOut.outPosition = float4(inVertex.inPosition, 1.0);
+    vOut.outPosition = mul(float4(inVertex.inPosition, 1.0f), mat);
     vOut.outTexCoord = inVertex.inTexCoord;
 
     return vOut;
