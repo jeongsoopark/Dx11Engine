@@ -66,6 +66,9 @@
     <ClCompile Include="Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StringConverter.h">
@@ -117,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\ConstantBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
