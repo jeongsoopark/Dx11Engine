@@ -6,6 +6,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
+#include "Camera.h"
 
 class Graphics
 {
@@ -48,6 +49,7 @@ private:
 	size_t windowWidth;
 	size_t windowHeight;
 
+	Camera mCamera;
 
 };
 
