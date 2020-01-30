@@ -49,6 +49,9 @@ void Graphics::RenderFrame()
 
 	//setting constant buffer
 	DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();
+	mCamera.AdjustPosition(0.0f, 0.01f, 0.0);
+
+
 	mConstantBuffer.data.mat = worldMat * mCamera.GetViewMatrix() * mCamera.GetProjectionMatrix();
 	mConstantBuffer.data.mat = DirectX::XMMatrixTranspose(mConstantBuffer.data.mat);
 
@@ -181,7 +184,6 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		ErrLogger::Log(hr, "Failed to create depth stencil view");
 		return false;
 	}
-
 
 	//D3d11_viewport state
 	D3D11_VIEWPORT viewport;
@@ -322,7 +324,7 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	mCamera.SetPosition(0.f, 0.f, 0.f);
+	mCamera.SetPosition(0.f, 0.f, -2.f);
 	mCamera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.1f, 1000.f);
 
 

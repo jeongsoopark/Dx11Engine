@@ -50,6 +50,5 @@ private:
 	size_t windowHeight;
 
 	Camera mCamera;
-
 };
 

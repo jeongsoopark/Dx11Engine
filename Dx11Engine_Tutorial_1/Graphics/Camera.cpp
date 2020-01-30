@@ -91,7 +91,7 @@ void Camera::SetRotation(const XMVECTOR& rot)
 void Camera::SetRotation(float x, float y, float z)
 {
 	this->rot = XMFLOAT3(x, y, z);
-	this->rotVector = XMLoadFloat3(*this->rot);
+	this->rotVector = XMLoadFloat3(&this->rot);
 	this->UpdateViewMatrix();
 }
 
@@ -121,4 +121,26 @@ void Camera::UpdateViewMatrix()
 	XMVECTOR upDir = XMVector3TransformCoord(this->DEFAULT_UP_VECTOR, camRoatationMatrix);
 	
 	this->viewMatrix = XMMatrixLookAtLH(this->posVector, camTarget, upDir);
+}
+
+
+void Camera::SetLookAtPos(XMFLOAT3 lookAtPos)
+{
+	if (lookAtPos.x == this->pos.x && lookAtPos.y == this->pos.y && lookAtPos.z == this->pos.z)
+		return;
+
+	lookAtPos.x = this->pos.x - lookAtPos.x;
+	lookAtPos.y = this->pos.y - lookAtPos.y;
+	lookAtPos.z = this->pos.z - lookAtPos.z;
+
+	float pitch = 0.f;
+	if (lookAtPos.y != 0.0f)
+	{
+		const float distance = sqrt(lookAtPos.x * lookAtPos.x + lookAtPos.z * lookAtPos.z);
+		pitch = atan(lookAtPos.y / distance);
+	}
+
+	this->SetRotation(pitch, 0.0f, 0.0f);
+
+
 }
