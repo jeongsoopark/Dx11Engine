@@ -17,12 +17,12 @@ public:
 
 	ID3D11Buffer* Get()const
 	{
-		return buffer.Get();
+		return this->buffer.Get();
 	}
 
 	ID3D11Buffer* const* GetAddressOf()const
 	{
-		return buffer.GetAddressOf();
+		return this->buffer.GetAddressOf();
 	}
 
 	UINT BufferSize() const
@@ -32,6 +32,8 @@ public:
 
 	HRESULT Initialize(ID3D11Device *device, DWORD * data, UINT numIndices)
 	{
+		if (this->buffer.Get() != nullptr)
+			this->buffer.Reset();
 		this->bufferSize = numIndices;
 		//Load Index Data
 		D3D11_BUFFER_DESC indexBufferDesc;
@@ -44,7 +46,7 @@ public:
 
 		D3D11_SUBRESOURCE_DATA indexBufferData;
 		indexBufferData.pSysMem = data;
-		HRESULT hr = device->CreateBuffer(&indexBufferDesc, &indexBufferData, buffer.GetAddressOf());
+		HRESULT hr = device->CreateBuffer(&indexBufferDesc, &indexBufferData, this->buffer.GetAddressOf());
 		return hr;
 	}
 };

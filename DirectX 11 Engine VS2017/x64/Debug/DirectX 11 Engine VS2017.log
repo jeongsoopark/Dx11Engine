@@ -1,5 +1,0 @@
-﻿d:\Github\Dx11Engine\DirectX 11 Engine VS2017\pixelshader.hlsl(12,12-76): warning X3206: implicit truncation of vector type
-  
-  compilation object save succeeded; see D:\Github\Dx11Engine\x64\Debug\pixelshader.cso
-  compilation object save succeeded; see D:\Github\Dx11Engine\x64\Debug\vertexshader.cso
-  DirectX 11 Engine VS2017.vcxproj -> D:\Github\Dx11Engine\x64\Debug\DirectX 11 Engine VS2017.exe

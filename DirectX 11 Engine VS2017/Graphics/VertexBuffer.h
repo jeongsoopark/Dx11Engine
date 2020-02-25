@@ -44,6 +44,8 @@ public:
 
 	HRESULT Initialize(ID3D11Device *device, T * data, UINT numVertices)
 	{
+		if (this->buffer.Get() != nullptr)
+			this->buffer.Reset();
 		this->bufferSize = numVertices;
 		this->stride = std::make_unique<UINT>(sizeof(T));
 
