@@ -14,6 +14,14 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	if (!InitializeScene())
 		return false;
 
+	//Setup ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(this->device.Get(), this->deviceContext.Get());
+	ImGui::StyleColorsDark();
+
 	return true;
 }
 
@@ -33,14 +41,22 @@ void Graphics::RenderFrame()
 
 	UINT offset = 0;
 
-	//Update Constant Buffer
-	XMMATRIX world = XMMatrixIdentity();
-	constantBuffer.data.mat = world * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-	constantBuffer.data.mat = DirectX::XMMatrixTranspose(constantBuffer.data.mat);
+	//Update Constant Buffer for vertex shader
+	static float translationOffset[3] = { 0.0f, 0.0f, 0.0f };
 
-	if (!constantBuffer.ApplyChanges())
+	XMMATRIX world = XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
+	constantBufferVS.data.mat = world * camera.GetViewMatrix() * camera.GetProjectionMatrix();
+	constantBufferVS.data.mat = DirectX::XMMatrixTranspose(constantBufferVS.data.mat);
+
+	if (!constantBufferVS.ApplyChanges())
 		return;
-	this->deviceContext->VSSetConstantBuffers(0, 1, this->constantBuffer.GetAddressOf());
+	this->deviceContext->VSSetConstantBuffers(0, 1, this->constantBufferVS.GetAddressOf());
+
+	//Update constant buffer for pixel shader
+	this->constantBufferPS.data.alpha = .5f;
+	if (!this->constantBufferPS.ApplyChanges())
+		return;
+	this->deviceContext->PSSetConstantBuffers(0, 1, this->constantBufferPS.GetAddressOf());
 
 	//Square
 	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());
@@ -52,6 +68,31 @@ void Graphics::RenderFrame()
 	spriteBatch->Begin();
 	spriteFont->DrawString(spriteBatch.get(), L"HELLO WORLD", DirectX::XMFLOAT2(0, 0), DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f,0.0f), DirectX::XMFLOAT2(1.0f, 1.0f));
 	spriteBatch->End();
+
+	static int counter = 0;
+	//start ImGui Frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//New test windows
+	ImGui::Begin("Test");
+	ImGui::Text("this is sample text");
+	if (ImGui::Button("Click me"))
+	{
+		counter++;
+	}
+	std::string clickCount = "Click count : " + std::to_string(counter);
+	ImGui::Text(clickCount.c_str());
+
+	ImGui::DragFloat3("translation XYZ", translationOffset, 0.1f, -5.0f, +5.0f);
+	ImGui::End();
+
+	//render Gui draw data
+	ImGui::Render();
+
+	//redner onto dx11 context
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	this->swapchain->Present(1, NULL);
 }
@@ -173,8 +214,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = this->windowWidth;
-	viewport.Height = this->windowHeight;
+	viewport.Width = float(this->windowWidth);
+	viewport.Height = float(this->windowHeight);
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -300,13 +341,20 @@ bool Graphics::InitializeScene()
 	}
 
 	//Initialize Constant Buffer(s)
-	hr = this->constantBuffer.Initialize(this->device.Get(), this->deviceContext.Get());
+	hr = this->constantBufferVS.Initialize(this->device.Get(), this->deviceContext.Get());
 	if (FAILED(hr))
 	{
-		ErrorLogger::Log(hr, "Failed to initialize constant buffer.");
+		ErrorLogger::Log(hr, "Failed to initialize vs constant buffer.");
 		return false;
 	}
 
+	hr = this->constantBufferPS.Initialize(this->device.Get(), this->deviceContext.Get());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize ps constant buffer.");
+		return false;
+	}
+	
 	camera.SetPosition(0.0f, 0.0f, -2.0f);
 	camera.SetProjectionValues(90.0f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.1f, 1000.0f);
 

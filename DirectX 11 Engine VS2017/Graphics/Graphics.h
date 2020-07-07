@@ -9,6 +9,9 @@
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
 
 class Graphics
 {
@@ -29,7 +32,8 @@ private:
 
 	VertexShader vertexshader;
 	PixelShader pixelshader;
-	ConstantBuffer<CB_VS_vertexshader> constantBuffer;
+	ConstantBuffer<CB_VS_vertexshader> constantBufferVS;
+	ConstantBuffer<CB_PS_pixelshader> constantBufferPS;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indicesBuffer;
@@ -40,6 +44,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
+	Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
 
 	std::unique_ptr<DirectX::SpriteBatch> spriteBatch;
 	std::unique_ptr<DirectX::SpriteFont> spriteFont;
