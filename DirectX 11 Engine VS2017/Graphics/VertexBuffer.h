@@ -1,6 +1,7 @@
 #ifndef VertexBuffer_h__
 #define VertexBuffer_h__
 #include <d3d11.h>
+#include <memory>
 #include <wrl/client.h>
 
 template<class T>
@@ -8,8 +9,6 @@ class VertexBuffer
 {
 private:
 	VertexBuffer(const VertexBuffer<T>& rhs);
-
-private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 	std::unique_ptr<UINT> stride;
 	UINT bufferSize = 0;

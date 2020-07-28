@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Graphics\ImGui">
       <UniqueIdentifier>{ed94c0ff-8a06-4636-be96-f2952d30a1b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MIsc">
+      <UniqueIdentifier>{c805128b-f52f-4ee2-99be-5efbbebaef55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{5769c645-32dc-48e8-b691-710b83f50011}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -96,8 +102,8 @@
     <ClCompile Include="Graphics\ImGui\imgui_widgets.cpp">
       <Filter>Source Files\Graphics\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\ImGui\imgui_impl_dx12.cpp">
-      <Filter>Source Files\Graphics\ImGui</Filter>
+    <ClCompile Include="Graphics\Model.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +170,6 @@
     <ClInclude Include="Graphics\ImGui\imgui_impl_dx11.h">
       <Filter>Header Files\Graphics\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\ImGui\imgui_impl_dx12.h">
-      <Filter>Header Files\Graphics\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\ImGui\imgui_impl_win32.h">
       <Filter>Header Files\Graphics\ImGui</Filter>
     </ClInclude>
@@ -181,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="Graphics\ImGui\imstb_truetype.h">
       <Filter>Header Files\Graphics\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="COMException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Model.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

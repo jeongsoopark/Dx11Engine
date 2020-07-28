@@ -40,6 +40,7 @@ void Engine::Update()
 			}
 		}
 	}
+	this->gfx.mModel.AdjustRotation(0.0f, 0.01f, 0.0f);
 
 	const float cameraSpeed = 0.02f;
 
