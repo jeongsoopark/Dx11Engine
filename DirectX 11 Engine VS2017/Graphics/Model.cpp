@@ -1,6 +1,6 @@
 #include "Model.h"
 
-bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader> & cb_vs_vertexshader)
+bool Model::Initialize(const std::string & filepath, ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader> & cb_vs_vertexshader)
 {
 	this->device = device;
 	this->deviceContext = deviceContext;
@@ -10,42 +10,10 @@ bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 	//Textured Square
 	try 
 	{
-		Vertex v[] =
+		if (!this->LoadModel(filepath))
 		{
-			Vertex(-0.5f,  -0.5f, -0.5f, 0.0f, 1.0f), //Front Bottom Left   - [0]
-			Vertex(-0.5f,   0.5f, -0.5f, 0.0f, 0.0f), //Front Top Left      - [1]
-			Vertex(0.5f,   0.5f, -0.5f, 1.0f, 0.0f), //Front Top Right     - [2]
-			Vertex(0.5f,  -0.5f, -0.5f, 1.0f, 1.0f), //Front Bottom Right   - [3]
-			Vertex(-0.5f,  -0.5f, 0.5f, 0.0f, 1.0f), //BACK Bottom Left   - [0]
-			Vertex(-0.5f,   0.5f, 0.5f, 0.0f, 0.0f), //BACK Top Left      - [1]
-			Vertex(0.5f,   0.5f, 0.5f, 1.0f, 0.0f), //BACK Top Right     - [2]
-			Vertex(0.5f,  -0.5f, 0.5f, 1.0f, 1.0f), //BACK Bottom Right   - [3]
-		};
-
-		//Load Vertex Data
-		HRESULT hr = this->vertexBuffer.Initialize(this->device, v, ARRAYSIZE(v));
-		COM_ERROR_IF_FAILED(hr, "Failed to create vertex buffer");
-
-		DWORD indices[] =
-		{
-			0, 1, 2,
-			0, 2, 3,
-			4, 7, 6,
-			4, 6, 5,
-			3, 2, 6, 
-			3, 6, 7, 
-			4, 5, 1,
-			4, 1, 0,
-			1, 5, 6, 
-			1, 6, 2, 
-			0, 3, 7, 
-			0, 7, 4,
-		};
-
-		//Load Index Data
-
-		hr = this->indexBuffer.Initialize(this->device, indices, ARRAYSIZE(indices));
-		COM_ERROR_IF_FAILED(hr, "Failed to create index buffer");
+			return false;
+		}
 	}
 	catch (COMException & exception)
 	{
@@ -53,9 +21,6 @@ bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 		return false;
 	}
 
-	this->SetPosition(0.0f, 0.0f, 0.0f);
-	this->SetRotation(0.0f, 0.0f, 0.0f);
-	this->UpdateWorldMatrix();
 	return true;
 }
 
@@ -65,160 +30,80 @@ void Model::SetTexture(ID3D11ShaderResourceView* texture)
 	this->texture = texture;
 }
 
-void Model::Draw(const XMMATRIX& viewProjectionMatrix)
+void Model::Draw(const XMMATRIX& worldMatrix, const XMMATRIX& viewProjectionMatrix)
 {
-	this->cb_vs_vertexshader->data.mat = this->worldMatrix*viewProjectionMatrix;
+	this->cb_vs_vertexshader->data.mat = worldMatrix*viewProjectionMatrix;
 	this->cb_vs_vertexshader->data.mat = XMMatrixTranspose(this->cb_vs_vertexshader->data.mat);
 	this->cb_vs_vertexshader->ApplyChanges();
 
 	this->deviceContext->VSSetConstantBuffers(0, 1, this->cb_vs_vertexshader->GetAddressOf());
-
 	this->deviceContext->PSSetShaderResources(0, 1, &(this->texture));
-	this->deviceContext->IASetIndexBuffer(this->indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	UINT offset = 0;
 
-	this->deviceContext->IASetVertexBuffers(0, 1, this->vertexBuffer.GetAddressOf(), this->vertexBuffer.StridePtr(), &offset);
-	this->deviceContext->DrawIndexed(this->indexBuffer.BufferSize(), 0, 0);
-}
-
-const XMVECTOR & Model::GetPositionVector() const
-{
-	return this->posVector;
-}
-
-const XMFLOAT3 & Model::GetPositionFloat3() const
-{
-	return this->pos;
-}
-
-const XMVECTOR & Model::GetRotationVector() const
-{
-	return this->rotVector;
-}
-
-const XMFLOAT3 & Model::GetRotationFloat3() const
-{
-	return this->rot;
-}
-
-void Model::SetPosition(const XMVECTOR & pos)
-{
-	XMStoreFloat3(&this->pos, pos);
-	this->posVector = pos;
-	this->UpdateWorldMatrix();
-}
-
-void Model::SetPosition(float x, float y, float z)
-{
-	this->pos = XMFLOAT3(x, y, z);
-	this->posVector = XMLoadFloat3(&this->pos);
-	this->UpdateWorldMatrix();
-}
-
-void Model::AdjustPosition(const XMVECTOR & pos)
-{
-	this->posVector += pos;
-	XMStoreFloat3(&this->pos, this->posVector);
-	this->UpdateWorldMatrix();
-}
-
-void Model::AdjustPosition(float x, float y, float z)
-{
-	this->pos.x += x;
-	this->pos.y += y;
-	this->pos.z += z;
-	this->posVector = XMLoadFloat3(&this->pos);
-	this->UpdateWorldMatrix();
-}
-
-void Model::SetRotation(const XMVECTOR & rot)
-{
-	this->rotVector = rot;
-	XMStoreFloat3(&this->rot, rot);
-	this->UpdateWorldMatrix();
-}
-
-void Model::SetRotation(float x, float y, float z)
-{
-	this->rot = XMFLOAT3(x, y, z);
-	this->rotVector = XMLoadFloat3(&this->rot);
-	this->UpdateWorldMatrix();
-}
-
-void Model::AdjustRotation(const XMVECTOR & rot)
-{
-	this->rotVector += rot;
-	XMStoreFloat3(&this->rot, this->rotVector);
-	this->UpdateWorldMatrix();
-}
-
-void Model::AdjustRotation(float x, float y, float z)
-{
-	this->rot.x += x;
-	this->rot.y += y;
-	this->rot.z += z;
-	this->rotVector = XMLoadFloat3(&this->rot);
-	this->UpdateWorldMatrix();
-}
-
-void Model::SetLookAtPos(XMFLOAT3 lookAtPos)
-{
-	//Verify that look at pos is not the same as cam pos. They cannot be the same as that wouldn't make sense and would result in undefined behavior.
-	if (lookAtPos.x == this->pos.x && lookAtPos.y == this->pos.y && lookAtPos.z == this->pos.z)
-		return;
-
-	lookAtPos.x = this->pos.x - lookAtPos.x;
-	lookAtPos.y = this->pos.y - lookAtPos.y;
-	lookAtPos.z = this->pos.z - lookAtPos.z;
-
-	float pitch = 0.0f;
-	if (lookAtPos.y != 0.0f)
+	for (UINT i = 0; i < meshes.size(); i++)
 	{
-		const float distance = sqrt(lookAtPos.x * lookAtPos.x + lookAtPos.z * lookAtPos.z);
-		pitch = atan(lookAtPos.y / distance);
+		meshes[i].Draw();
+	}
+}
+
+bool Model::LoadModel(const std::string& filepath)
+{
+	Assimp::Importer importer;
+	const aiScene* pScene = importer.ReadFile(filepath,
+		aiProcess_Triangulate |
+		aiProcess_ConvertToLeftHanded);
+	if(pScene == NULL)
+		return false;
+	this->ProcessNode(pScene->mRootNode, pScene);
+	return true;
+}
+
+void Model::ProcessNode(aiNode* node, const aiScene * scene)
+{
+	for (UINT i = 0; i < node->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		meshes.push_back(this->ProcessMesh(mesh, scene));;
 	}
 
-	float yaw = 0.0f;
-	if (lookAtPos.x != 0.0f)
+
+	for (UINT i = 0; i < node->mNumChildren; i++)
 	{
-		yaw = atan(lookAtPos.x / lookAtPos.z);
+		this->ProcessNode(node->mChildren[i], scene);
 	}
-	if (lookAtPos.z > 0)
-		yaw += XM_PI;
 
-	this->SetRotation(pitch, yaw, 0.0f);
 }
 
-const XMVECTOR & Model::GetForwardVector()
+Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene * scene)
 {
-	return this->vec_forward;
-}
 
-const XMVECTOR & Model::GetRightVector()
-{
-	return this->vec_right;
-}
+	std::vector<Vertex> vertices;
+	std::vector<DWORD> indices;
+	//for vertices
+	for (UINT i = 0 ; i < mesh->mNumVertices; i++)
+	{
+		Vertex v;
+		v.pos.x = mesh->mVertices[i].x;
+		v.pos.y = mesh->mVertices[i].y;
+		v.pos.z = mesh->mVertices[i].z;
+		if (mesh->mTextureCoords[0])
+		{
+			v.texCoord.x = (float)mesh->mTextureCoords[0][i].x;
+			v.texCoord.y = (float)mesh->mTextureCoords[0][i].y;
 
-const XMVECTOR & Model::GetBackwardVector()
-{
-	return this->vec_backward;
-}
+		}
+		vertices.push_back(v);
+	}
 
-const XMVECTOR & Model::GetLeftVector()
-{
-	return this->vec_left;
-}
-
-
-void Model::UpdateWorldMatrix()
-{
-	this->worldMatrix = XMMatrixRotationRollPitchYaw(this->rot.x, this->rot.y, this->rot.z) * XMMatrixTranslation(this->pos.x, this->pos.y, this->pos.z);
-
-	XMMATRIX vecRotationMatrix = XMMatrixRotationRollPitchYaw(0.0f, this->rot.y, 0.0f);
-	this->vec_forward = XMVector3TransformCoord(this->DEFAULT_FORWARD_VECTOR, vecRotationMatrix);
-	this->vec_backward = XMVector3TransformCoord(this->DEFAULT_BACKWARD_VECTOR, vecRotationMatrix);
-	this->vec_left = XMVector3TransformCoord(this->DEFAULT_LEFT_VECTOR, vecRotationMatrix);
-	this->vec_right = XMVector3TransformCoord(this->DEFAULT_RIGHT_VECTOR, vecRotationMatrix);
+	//for indices
+	for (UINT i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (UINT j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+	return Mesh(this->device, this->deviceContext, vertices, indices);
 }
 
 

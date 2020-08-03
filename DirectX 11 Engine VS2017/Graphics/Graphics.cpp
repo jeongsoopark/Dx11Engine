@@ -47,7 +47,7 @@ void Graphics::RenderFrame()
 
 	{
 		//Draw modeling
-		this->mModel.Draw(camera.GetViewMatrix()* camera.GetProjectionMatrix());
+		this->gameObject.Draw(camera.GetViewMatrix()* camera.GetProjectionMatrix());
 	}
 
 	//Draw Text
@@ -265,17 +265,17 @@ bool Graphics::InitializeScene()
 
 		//Initialize Constant Buffer(s)
 		hr = this->constantBufferVS.Initialize(this->device.Get(), this->deviceContext.Get());
-		COM_ERROR_IF_FAILED(hr, "Failed to initialize vs constant buffer");
+		COM_ERROR_IF_FAILED(hr, "Failed to initialize vs constanut buffer");
 
 		hr = this->constantBufferPS.Initialize(this->device.Get(), this->deviceContext.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize ps constant buffer");
 		//Initialize Model
-		if (!this->mModel.Initialize(this->device.Get(), this->deviceContext.Get(), this->myNvidiaTexture.Get(), this->constantBufferVS))
+		if (!this->gameObject.Initialize("Data\\Objects\\nanosuit\\nanosuit.obj", this->device.Get(), this->deviceContext.Get(), this->myNvidiaTexture.Get(), this->constantBufferVS))
 		{
 			return false;
 		}
 		
-		camera.SetPosition(0.0f, 0.0f, -2.0f);
+		camera.SetPosition(0.0f, 12.0f, -10.0f);
 		camera.SetProjectionValues(90.0f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.1f, 1000.0f);
 	}
 	catch (COMException & exception)
